@@ -11,7 +11,7 @@ from utils import clearTerminal
 from scripts import lookupIp
 from scripts import lookupNum
 
-options = ["Ip lookup", "Phone number lookup", "Port sniffer", "Exit"]
+options = ["Ip lookup", "Phone number lookup", "Exit"]
 
 def renderMenu():
     while True:
