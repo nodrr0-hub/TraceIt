@@ -10,8 +10,10 @@ from utils import clearTerminal
 
 from scripts import lookupIp
 from scripts import lookupNum
+from scripts import checkEmail
+from scripts import loginfo
 
-options = ["Ip lookup", "Phone number lookup", "Exit"]
+options = ["Ip lookup", "Phone number lookup", "Validate email", "Log info", "Exit"]
 
 def renderMenu():
     while True:
@@ -40,5 +42,10 @@ def renderMenu():
         elif choice == "2":
             clearTerminal()
             lookupNum()
-
+        elif choice == "3":
+            clearTerminal()
+            checkEmail()
+        elif choice == "4":
+            clearTerminal()
+            loginfo()
 renderMenu()
