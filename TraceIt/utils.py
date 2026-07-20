@@ -50,9 +50,12 @@ def formatDebug(label, val):
     return f"{label}: {val}"
 
 def formatErr(msg):
-    return f"{color('!Error:', 'secondary')} {msg}"
+    return f"{color('!Error:', 'secondary')} {msg + "\n"}"
 
 
 def clearTerminal():
     os.system("cls")
     renderBanner()
+
+def formatRam(val):
+    return str(round(val / (1024 ** 3), 3)) + "GB"
